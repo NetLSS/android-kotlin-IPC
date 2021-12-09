@@ -6,6 +6,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.os.SystemClock
@@ -17,9 +18,11 @@ class TestService : Service() {
 
     var value = 0
     var isRunning = false
+    var binder = LocalBinder()
 
+    // 외부에서 서비스에 접속하면 호출되는 메서드
     override fun onBind(intent: Intent): IBinder {
-        TODO("Return the communication channel to the service.")
+        return binder
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -58,5 +61,17 @@ class TestService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         isRunning = false
+    }
+
+    // 변수값 반환 하는 메서드
+    fun getNumber(): Int {
+        return value
+    }
+
+    // 접속하는 액티비티티 에서 서비스를 추출하기 위해 사용하는 객체
+    inner class LocalBinder : Binder() {
+        fun getService(): TestService {
+            return this@TestService
+        }
     }
 }
